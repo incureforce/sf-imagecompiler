@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SFC.ImageCompiler": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Temp\\satisfactory-images\" -cssbc \"sf-icon\" -sz 48"
+    }
+  }
+}
