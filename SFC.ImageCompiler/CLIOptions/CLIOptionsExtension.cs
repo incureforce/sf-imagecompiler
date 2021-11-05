@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Serilog;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Collections.Generic;
 
 namespace SFC.ImageCompiler
 {
