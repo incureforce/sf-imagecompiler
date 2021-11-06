@@ -31,8 +31,10 @@ namespace SFC.ImageCompiler
                 Execute(args);
             }
             catch (Exception ex) when (debug == false) {
+                var exType = ex.GetType();
+
                 Console.Error
-                    .WriteLine(ex.Message);
+                    .WriteLine($"{exType.Name}: {ex.Message}");
             }
 
             if (debug) {
@@ -55,8 +57,12 @@ namespace SFC.ImageCompiler
             var target = options.AddStringOption(CLIOptionsHelper.GetKeys("Target"));
             var output = options.AddStringOption(CLIOptionsHelper.GetKeys("Output"));
             var source = options.AddStringOption(CLIOptionsHelper.GetKeys("Source", withDefault: true));
+
+            var css = options.AddActionOption(CLIOptionsHelper.GetKeys("Css", "Css"));
             var cssBaseClass = options.AddStringOption(CLIOptionsHelper.GetKeys("CSSBaseClass", "CSSBC"));
             var cssPathPrefix = options.AddStringOption(CLIOptionsHelper.GetKeys("CSSPathSuffix", "CSSPS"));
+
+            var json = options.AddActionOption(CLIOptionsHelper.GetKeys("Json", "Json"));
 
             filter.Text = "*.png";
 
@@ -96,7 +102,7 @@ namespace SFC.ImageCompiler
                     },
                     new ProgramOptionDescriptions {
                         Name = "Name",
-                        Description = "Project Name (example.png, example.png.json)",
+                        Description = "Project Name (example.png, example.json, example.json)",
 
                         Option = name,
                     },
@@ -105,6 +111,12 @@ namespace SFC.ImageCompiler
                         Description = "Set Size for images",
 
                         Option = size,
+                    },
+                    new ProgramOptionDescriptions {
+                        Name = "CSS",
+                        Description = "Export CSS",
+
+                        Option = css,
                     },
                     new ProgramOptionDescriptions {
                         Name = "CSS base-class",
@@ -117,7 +129,13 @@ namespace SFC.ImageCompiler
                         Description = "Sets the path prefix for the css output",
 
                         Option = cssPathPrefix,
-                    }
+                    },
+                    new ProgramOptionDescriptions {
+                        Name = "JSON",
+                        Description = "Export JSON",
+
+                        Option = json,
+                    },
                 };
 
                 RunHelp(descriptions);
@@ -144,10 +162,15 @@ namespace SFC.ImageCompiler
                     ? ProgramCombineParameters.FindByExtension("png")
                     : ProgramCombineParameters.FindByExtension(output.Text);
 
-            if (string.IsNullOrEmpty(cssBaseClass.Text) is false) {
+            if (css.Invoke) {
                 parameters.CSS = new ProgramCombineCSSParameters {
                     BaseClass = cssBaseClass.Text,
                     PathPrefix = cssPathPrefix.Text,
+                };
+            }
+
+            if (json.Invoke) {
+                parameters.JSON = new ProgramCombineJSONParameters {
                 };
             }
 

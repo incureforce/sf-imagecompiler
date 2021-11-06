@@ -1,16 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SFC.ImageCompiler
 {
-    public class CLINumberOption : ICLIOptionWithParameter
+    [DebuggerDisplay("Number {GetDebugKeys()}")]
+    public class CLINumberOption : CLIOptionBase, ICLIOptionWithParameter
     {
-        public CLINumberOption(IEnumerable<string> keys)
+        public CLINumberOption(IEnumerable<string> keys) : base(keys)
         {
-            Keys = keys;
-        }
-
-        public IEnumerable<string> Keys {
-            get;
         }
 
         public int Number {
@@ -26,7 +23,6 @@ namespace SFC.ImageCompiler
             Number = flag;
 
             return true;
-
         }
     }
 }

@@ -1,16 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SFC.ImageCompiler
 {
-    public class CLIStringOption : ICLIOptionWithParameter
+    [DebuggerDisplay("String {GetDebugKeys()}")]
+    public class CLIStringOption : CLIOptionBase, ICLIOptionWithParameter
     {
-        public CLIStringOption(IEnumerable<string> keys)
+        public CLIStringOption(IEnumerable<string> keys) : base(keys)
         {
-            Keys = keys;
-        }
-
-        public IEnumerable<string> Keys {
-            get;
         }
 
         public string Text {

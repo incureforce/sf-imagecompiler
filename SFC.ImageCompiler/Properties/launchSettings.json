@@ -2,7 +2,7 @@
   "profiles": {
     "SFC.ImageCompiler": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Temp\\satisfactory-images\" -cssbc \"sf-icon\" -sz 48"
+      "commandLineArgs": "\"C:\\Temp\\satisfactory-images\" --json --css -cssbc \"sf-icon\" -sz 48 --name \"test\" --target \"out\""
     }
   }
 }

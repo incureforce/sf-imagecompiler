@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SFC.ImageCompiler
 {
-    public class CLIActionOption : ICLIOptionWithSet
+    [DebuggerDisplay("Action {GetDebugKeys()}")]
+    public class CLIActionOption : CLIOptionBase, ICLIOptionWithSet
     {
-        public CLIActionOption(IEnumerable<string> keys)
+        public CLIActionOption(IEnumerable<string> keys) : base(keys)
         {
-            Keys = keys;
-        }
-
-        public IEnumerable<string> Keys {
-            get;
         }
 
         public bool Invoke {

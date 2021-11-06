@@ -1,19 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SFC.ImageCompiler
 {
-    public class CLIArrayOption : ICLIOptionWithParameter
+    [DebuggerDisplay("Array {GetDebugKeys()}")]
+    public class CLIArrayOption : CLIOptionBase
     {
         private readonly LinkedList<string>
             itemList = new LinkedList<string>();
 
-        public CLIArrayOption(IEnumerable<string> keys)
+        public CLIArrayOption(IEnumerable<string> keys) : base(keys)
         {
-            Keys = keys;
-        }
-
-        public IEnumerable<string> Keys {
-            get;
         }
 
         public IEnumerable<string> Items {

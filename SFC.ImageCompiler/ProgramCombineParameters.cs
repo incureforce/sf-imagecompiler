@@ -42,6 +42,7 @@ namespace SFC.ImageCompiler
         public ProgramCombineCSSParameters CSS {
             get; set;
         }
+        internal ProgramCombineJSONParameters JSON { get; set; }
 
         internal static ImageExtension FindByExtension(string text)
         {
@@ -75,6 +76,8 @@ namespace SFC.ImageCompiler
             var count = files.Count;
 
             if (Size == 0) {
+                Console.WriteLine($"Scan images ...");
+
                 foreach (var file in files) {
                     using var source = new Bitmap(file);
 
@@ -86,6 +89,11 @@ namespace SFC.ImageCompiler
                         h = source.Height;
                     }
                 }
+
+                Console.WriteLine($"Scan images ... complete");
+            }
+            else {
+                Console.WriteLine($"Scan images ... skipped");
             }
 
             var stride = (int)Math.Ceiling(Math.Sqrt(count));
@@ -96,14 +104,20 @@ namespace SFC.ImageCompiler
                 },
             };
 
+            Console.WriteLine($"Image size: {stride * w}x{stride * h} (pixels)");
+
             using var target = new Bitmap(stride * w, stride * h);
             using (var graphics = Graphics.FromImage(target)) {
+                Console.WriteLine($"Merge images ...");
+
                 graphics.CompositingQuality = CompositingQuality.HighQuality;
                 graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
                 var index = 0;
 
                 foreach (var file in files) {
+                    Console.WriteLine($"Merge image '{file}'");
+
                     using var source = new Bitmap(file);
 
                     var x = (index % stride) * w;
@@ -124,42 +138,68 @@ namespace SFC.ImageCompiler
                 }
 
                 graphics.Save();
+
+                Console.WriteLine($"Merge images ... complete");
             }
+
+            Console.WriteLine("Export image ...");
+
+            using (var stream = File.Create($"{Path.Combine(Target, Name)}.{Extension.Name}")) {
+                target.Save(stream, Extension.Format);
+            }
+
+            Console.WriteLine("Export image ... complete");
 
             if (CSS is not null) {
-                
-
-                using (var stream = File.Create($"{Path.Combine(Target, Name)}.css")) {
-                    var streamWriter = new StreamWriter(stream);
-                    var indentWriter = new IndentWriter(streamWriter);
-
-                    indentWriter.WriteLine($".{CSS.BaseClass} {{");
-                    indentWriter.WriteLine($"    background-image: url({CSS.PathPrefix}{output});");
-                    indentWriter.WriteLine($"    background-color: transparent;");
-                    //indentWriter.WriteLine($"    background-repeat: no-repeat;");
-                    indentWriter.WriteLine($"    width: {w}px;");
-                    indentWriter.WriteLine($"    height: {h}px;");
-                    indentWriter.WriteLine($"}}");
-
-                    foreach (var e in doc.Descriptions) {
-                        indentWriter.WriteLine($"");
-                        indentWriter.WriteLine($".{CSS.BaseClass}.{Path.GetFileNameWithoutExtension(e.Name)} {{");
-                        //indentWriter.WriteLine($"    background-size: {w}px {h}px;");
-                        indentWriter.WriteLine($"    background-position: -{e.X}px -{e.Y}px;");
-                        indentWriter.WriteLine($"}}");
-                    }
-
-                    streamWriter.Flush();
-                }
+                ExportCSS(doc, output);
             }
+
+            if (JSON is not null) {
+                ExportJSON(doc);
+            }
+        }
+
+        private void ExportJSON(ImageDescriptionDocument doc)
+        {
+            Console.WriteLine("Export json");
 
             using (var stream = File.Create($"{Path.Combine(Target, Name)}.json")) {
                 JsonSerializer.SerializeAsync(stream, doc);
             }
 
-            using (var stream = File.Create($"{Path.Combine(Target, Name)}.{Extension.Name}")) {
-                target.Save(stream, Extension.Format);
+            Console.WriteLine("Export json ... complete");
+        }
+
+        private void ExportCSS(ImageDescriptionDocument doc, string output)
+        {
+            Console.WriteLine("Export css");
+
+            var dimensions = doc.Dimensions;
+
+            using (var stream = File.Create($"{Path.Combine(Target, Name)}.css")) {
+                var streamWriter = new StreamWriter(stream);
+                var indentWriter = new IndentWriter(streamWriter);
+
+                indentWriter.WriteLine($".{CSS.BaseClass} {{");
+                indentWriter.WriteLine($"    background-image: url({CSS.PathPrefix}{output});");
+                indentWriter.WriteLine($"    background-color: transparent;");
+                //indentWriter.WriteLine($"    background-repeat: no-repeat;");
+                indentWriter.WriteLine($"    width: {dimensions.W}px;");
+                indentWriter.WriteLine($"    height: {dimensions.H}px;");
+                indentWriter.WriteLine($"}}");
+
+                foreach (var e in doc.Descriptions) {
+                    indentWriter.WriteLine($"");
+                    indentWriter.WriteLine($".{CSS.BaseClass}.{Path.GetFileNameWithoutExtension(e.Name)} {{");
+                    //indentWriter.WriteLine($"    background-size: {w}px {h}px;");
+                    indentWriter.WriteLine($"    background-position: -{e.X}px -{e.Y}px;");
+                    indentWriter.WriteLine($"}}");
+                }
+
+                streamWriter.Flush();
             }
+
+            Console.WriteLine("Export css ... complete");
         }
     }
 }

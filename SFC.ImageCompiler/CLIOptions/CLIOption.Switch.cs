@@ -1,16 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SFC.ImageCompiler
 {
-    public class CLISwitchOption : ICLIOptionWithSet, ICLIOptionWithParameter
+    [DebuggerDisplay("Switch {GetDebugKeys()}")]
+    public class CLISwitchOption : CLIOptionBase, ICLIOptionWithSet, ICLIOptionWithParameter
     {
-        public CLISwitchOption(IEnumerable<string> keys)
+        public CLISwitchOption(IEnumerable<string> keys) : base(keys)
         {
-            Keys = keys;
-        }
-
-        public IEnumerable<string> Keys {
-            get;
         }
 
         public bool Flag {

@@ -69,12 +69,14 @@ namespace SFC.ImageCompiler
 
                 stringBuilder.Clear();
 
-                stringBuilder.Append("-");
-                stringBuilder.Append(shortKey.ToLower());
+                if (shortKey != completeKey) {
+                    stringBuilder.Append("-");
+                    stringBuilder.Append(shortKey.ToLower());
 
-                yield return stringBuilder.ToString();
+                    yield return stringBuilder.ToString();
 
-                stringBuilder.Clear();
+                    stringBuilder.Clear();
+                }
             }
 
             if (withDefault) {
